@@ -1,0 +1,38 @@
+# Archivos de configuración con credenciales
+config/config.php
+
+# Directorio de uploads (archivos subidos por usuarios)
+uploads/*
+!uploads/.gitkeep
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archivos de editores
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+error_log
+access_log
+
+# Archivos temporales de PHP
+*.tmp
+*.temp
+
+# Cache
+cache/
+tmp/
+
+# Archivos de entorno
+.env
+.env.local
+.env.*.local

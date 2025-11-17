@@ -1,0 +1,20 @@
+RewriteEngine On
+
+# Evitar acceso a archivos y directorios del sistema
+RewriteRule ^(config|app|uploads)/.*$ - [F,L]
+
+# Redirigir todo al index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Habilitar GZIP
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript
+</IfModule>
+
+# Configurar el tamaño máximo de subida
+php_value upload_max_filesize 100M
+php_value post_max_size 100M
+php_value max_execution_time 300
+php_value max_input_time 300

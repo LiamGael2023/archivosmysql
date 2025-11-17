@@ -1,0 +1,13 @@
+# Proteger directorios sensibles
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Redirigir todo al directorio public
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Denegar acceso a archivos de configuración
+<FilesMatch "^(config\.php|\.env|database\.sql)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
