@@ -1,3 +1,9 @@
+<?php
+// Extraer variables del array $data
+if (isset($data) && is_array($data)) {
+    extract($data);
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
