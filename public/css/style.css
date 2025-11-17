@@ -43,7 +43,7 @@
 }
 
 .navbar-vertical .navbar-nav .nav-link {
-    color: rgba(255, 255, 255, 0.8);
+    color: #fff;
     transition: all 0.2s ease;
 }
 
@@ -76,6 +76,10 @@
 
 .navbar-vertical .dropdown-item.active {
     background-color: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.navbar-vertical .dropdown-item .ti-folder {
     color: #fff;
 }
 

@@ -16,7 +16,7 @@ if (isset($data) && is_array($data)) {
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet"/>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css?v=2.0">
 </head>
 <body>
     <div class="page">
