@@ -16,7 +16,7 @@ if (isset($data) && is_array($data)) {
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet"/>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css?v=2.0">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css?v=3.0">
 </head>
 <body>
     <div class="page">
@@ -399,40 +399,28 @@ if (isset($data) && is_array($data)) {
 
     <!-- Modal: Subir Archivo -->
     <div class="modal modal-blur fade" id="uploadFileModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="ti ti-upload icon me-2"></i>Subir Archivo</h5>
+                    <h5 class="modal-title"><i class="ti ti-upload icon me-2"></i>Subir Archivos</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form method="POST" action="<?= BASE_URL ?>/file/upload" enctype="multipart/form-data">
+                <form method="POST" action="<?= BASE_URL ?>/file/upload" enctype="multipart/form-data" id="uploadFilesForm">
                     <div class="modal-body">
                         <input type="hidden" name="folder_id" value="<?= $currentFolder ?>">
                         <div class="mb-3">
                             <label class="form-label required">Seleccionar archivo(s)</label>
-                            <input type="file" name="files[]" class="form-control" multiple required>
+                            <input type="file" name="files[]" id="fileInput" class="form-control" multiple required onchange="handleFileSelect(this)">
                             <small class="form-hint">Puedes seleccionar múltiples archivos. Tamaño máximo por archivo: 100MB</small>
                         </div>
 
-                        <div id="metaKeysContainer">
-                            <label class="form-label">Metakeys (opcional)</label>
-                            <div class="row mb-2">
-                                <div class="col">
-                                    <input type="text" name="meta_keys[0][key]" class="form-control" placeholder="Clave (ej: categoría)">
-                                </div>
-                                <div class="col">
-                                    <input type="text" name="meta_keys[0][value]" class="form-control" placeholder="Valor (ej: importante)">
-                                </div>
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-sm btn-ghost-success" onclick="addMetaInput()">
-                            <i class="ti ti-plus icon"></i> Agregar Metakey
-                        </button>
+                        <!-- Contenedor dinámico para archivos seleccionados -->
+                        <div id="filesMetaContainer"></div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-success">
-                            <i class="ti ti-upload icon"></i> Subir Archivo
+                            <i class="ti ti-upload icon"></i> Subir Archivos
                         </button>
                     </div>
                 </form>

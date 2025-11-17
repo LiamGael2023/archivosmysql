@@ -237,6 +237,17 @@
     background-color: #f8f9fa;
 }
 
+#filesMetaContainer .card {
+    border-left: 3px solid #206bc4;
+}
+
+#filesMetaContainer .metakeys-section {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    margin-top: 1rem;
+}
+
 /* ========================================
    Empty states
    ======================================== */

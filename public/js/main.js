@@ -105,22 +105,116 @@ function deleteMeta(metaId) {
     }
 }
 
-// Agregar inputs dinámicos para metakeys en el modal de subir
-let metaKeyCounter = 1;
-function addMetaInput() {
-    const container = document.getElementById('metaKeysContainer');
-    const div = document.createElement('div');
-    div.className = 'row mb-2';
-    div.innerHTML = `
-        <div class="col">
-            <input type="text" name="meta_keys[${metaKeyCounter}][key]" class="form-control" placeholder="Clave (ej: categoría)">
+// Manejar selección de archivos y generar campos de metakeys individuales
+function handleFileSelect(input) {
+    const files = input.files;
+    const container = document.getElementById('filesMetaContainer');
+
+    // Limpiar contenedor
+    container.innerHTML = '';
+
+    if (files.length === 0) {
+        return;
+    }
+
+    // Crear una tarjeta para cada archivo
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const fileSize = formatFileSize(file.size);
+
+        const fileCard = document.createElement('div');
+        fileCard.className = 'card mb-3';
+        fileCard.innerHTML = `
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="me-3">
+                        <i class="ti ti-file-text icon" style="font-size: 2rem; color: #206bc4;"></i>
+                    </div>
+                    <div class="flex-fill">
+                        <h4 class="card-title mb-1">${escapeHtml(file.name)}</h4>
+                        <p class="text-muted mb-0">Tamaño: ${fileSize}</p>
+                    </div>
+                </div>
+
+                <div class="metakeys-section">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="form-label mb-0">Metakeys para este archivo (opcional)</label>
+                        <button type="button" class="btn btn-sm btn-ghost-success" onclick="addMetaKeyForFile(${i})">
+                            <i class="ti ti-plus icon"></i> Agregar Metakey
+                        </button>
+                    </div>
+                    <div id="metaKeysFile${i}" class="metakeys-container">
+                        <div class="row mb-2">
+                            <div class="col-md-5">
+                                <input type="text" name="file_meta[${i}][0][key]" class="form-control" placeholder="Clave (ej: categoría)">
+                            </div>
+                            <div class="col-md-5">
+                                <input type="text" name="file_meta[${i}][0][value]" class="form-control" placeholder="Valor (ej: importante)">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-ghost-danger w-100" onclick="this.closest('.row').remove()">
+                                    <i class="ti ti-trash icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(fileCard);
+    }
+
+    // Mostrar mensaje con cantidad de archivos
+    if (files.length > 1) {
+        const countMsg = document.createElement('div');
+        countMsg.className = 'alert alert-info mb-3';
+        countMsg.innerHTML = `
+            <i class="ti ti-info-circle icon me-2"></i>
+            Has seleccionado <strong>${files.length} archivos</strong>. Puedes agregar metakeys individuales para cada uno.
+        `;
+        container.insertBefore(countMsg, container.firstChild);
+    }
+}
+
+// Agregar metakey adicional para un archivo específico
+function addMetaKeyForFile(fileIndex) {
+    const container = document.getElementById(`metaKeysFile${fileIndex}`);
+    const metaCount = container.querySelectorAll('.row').length;
+
+    const newRow = document.createElement('div');
+    newRow.className = 'row mb-2';
+    newRow.innerHTML = `
+        <div class="col-md-5">
+            <input type="text" name="file_meta[${fileIndex}][${metaCount}][key]" class="form-control" placeholder="Clave (ej: categoría)">
         </div>
-        <div class="col">
-            <input type="text" name="meta_keys[${metaKeyCounter}][value]" class="form-control" placeholder="Valor (ej: importante)">
+        <div class="col-md-5">
+            <input type="text" name="file_meta[${fileIndex}][${metaCount}][value]" class="form-control" placeholder="Valor (ej: importante)">
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-ghost-danger w-100" onclick="this.closest('.row').remove()">
+                <i class="ti ti-trash icon"></i>
+            </button>
         </div>
     `;
-    container.appendChild(div);
-    metaKeyCounter++;
+
+    container.appendChild(newRow);
+}
+
+// Función auxiliar para escapar HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Función auxiliar para formatear tamaño de archivo
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
 }
 
 // Función auxiliar para enviar formularios
@@ -298,6 +392,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 fileInput.files = files;
             }
         }
+    }
+});
+
+// Resetear modal de subida de archivos al cerrarlo
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadModal = document.getElementById('uploadFileModal');
+    if (uploadModal) {
+        uploadModal.addEventListener('hidden.bs.modal', function () {
+            const fileInput = document.getElementById('fileInput');
+            const filesMetaContainer = document.getElementById('filesMetaContainer');
+
+            if (fileInput) {
+                fileInput.value = '';
+            }
+            if (filesMetaContainer) {
+                filesMetaContainer.innerHTML = '';
+            }
+        });
     }
 });
 

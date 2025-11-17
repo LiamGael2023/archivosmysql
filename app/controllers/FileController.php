@@ -73,9 +73,9 @@ class FileController {
 
                 $file_id = $this->fileModel->create($data);
 
-                // Agregar metakeys si existen (solo al primer archivo para simplificar)
-                if ($i === 0 && isset($_POST['meta_keys']) && is_array($_POST['meta_keys'])) {
-                    foreach ($_POST['meta_keys'] as $meta) {
+                // Agregar metakeys individuales para este archivo si existen
+                if (isset($_POST['file_meta'][$i]) && is_array($_POST['file_meta'][$i])) {
+                    foreach ($_POST['file_meta'][$i] as $meta) {
                         if (!empty($meta['key'])) {
                             $this->metaKeyModel->add('file', $file_id, $meta['key'], $meta['value'] ?? null);
                         }
