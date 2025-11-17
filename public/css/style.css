@@ -248,6 +248,20 @@
     margin-top: 1rem;
 }
 
+/* Asegurar que el modal de subida sea scrollable */
+#uploadFileModal .modal-dialog-scrollable .modal-body {
+    max-height: calc(90vh - 120px);
+    overflow-y: auto;
+}
+
+#uploadFileModal .modal-footer {
+    position: sticky;
+    bottom: 0;
+    background-color: #f8f9fa;
+    z-index: 1;
+    border-top: 1px solid #dee2e6;
+}
+
 /* ========================================
    Empty states
    ======================================== */

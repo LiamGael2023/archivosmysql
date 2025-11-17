@@ -16,7 +16,7 @@ if (isset($data) && is_array($data)) {
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet"/>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css?v=3.0">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css?v=3.1">
 </head>
 <body>
     <div class="page">
@@ -399,8 +399,8 @@ if (isset($data) && is_array($data)) {
 
     <!-- Modal: Subir Archivo -->
     <div class="modal modal-blur fade" id="uploadFileModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
-            <div class="modal-content">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+            <div class="modal-content" style="max-height: 90vh;">
                 <div class="modal-header">
                     <h5 class="modal-title"><i class="ti ti-upload icon me-2"></i>Subir Archivos</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
