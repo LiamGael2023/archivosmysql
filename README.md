@@ -12,7 +12,9 @@ Sistema completo de gestión de archivos similar a OwnCloud, desarrollado en PHP
 - **Filtrado**: Filtrar archivos por metakeys específicos
 - **Ordenamiento**: Ordenar archivos por ID, nombre, fecha de creación o tamaño (ASC/DESC)
 - **Compartir**: Generar enlaces públicos para compartir archivos o carpetas
-- **Interfaz Moderna**: Diseño responsive y fácil de usar
+- **Interfaz Moderna**: Diseño profesional con Tabler.io, completamente responsive
+- **Drag & Drop**: Arrastra y suelta archivos para subirlos fácilmente
+- **Responsive Design**: Optimizado para móviles, tablets y desktop
 
 ## Tecnologías
 
@@ -20,7 +22,10 @@ Sistema completo de gestión de archivos similar a OwnCloud, desarrollado en PHP
 - MySQL 5.7+
 - PDO para conexión a base de datos
 - Arquitectura MVC
+- **Tabler.io** - Framework UI moderno basado en Bootstrap 5
+- **Tabler Icons** - Conjunto de iconos SVG
 - HTML5, CSS3, JavaScript vanilla
+- Diseño responsive con breakpoints optimizados
 
 ## Estructura del Proyecto
 
