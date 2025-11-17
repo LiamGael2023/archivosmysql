@@ -19,7 +19,12 @@ class FolderController {
         }
 
         $name = isset($_POST['name']) ? trim($_POST['name']) : '';
-        $parent_id = isset($_POST['parent_id']) ? (int)$_POST['parent_id'] : null;
+        $parent_id = isset($_POST['parent_id']) && $_POST['parent_id'] !== '' ? (int)$_POST['parent_id'] : null;
+
+        // Convertir 0 a null para carpetas en la raíz
+        if ($parent_id === 0) {
+            $parent_id = null;
+        }
 
         if ($name) {
             $this->folderModel->create($name, $parent_id);
@@ -43,7 +48,12 @@ class FolderController {
 
         $id = isset($_POST['folder_id']) ? (int)$_POST['folder_id'] : 0;
         $name = isset($_POST['name']) ? trim($_POST['name']) : '';
-        $parent_id = isset($_POST['parent_id']) ? (int)$_POST['parent_id'] : null;
+        $parent_id = isset($_POST['parent_id']) && $_POST['parent_id'] !== '' ? (int)$_POST['parent_id'] : null;
+
+        // Convertir 0 a null
+        if ($parent_id === 0) {
+            $parent_id = null;
+        }
 
         if ($id && $name) {
             if ($this->folderModel->updateName($id, $name)) {
@@ -67,7 +77,12 @@ class FolderController {
         }
 
         $id = isset($_POST['folder_id']) ? (int)$_POST['folder_id'] : 0;
-        $parent_id = isset($_POST['parent_id']) ? (int)$_POST['parent_id'] : null;
+        $parent_id = isset($_POST['parent_id']) && $_POST['parent_id'] !== '' ? (int)$_POST['parent_id'] : null;
+
+        // Convertir 0 a null
+        if ($parent_id === 0) {
+            $parent_id = null;
+        }
 
         if ($id && $id != 1) { // No permitir eliminar la carpeta raíz
             if ($this->folderModel->delete($id)) {

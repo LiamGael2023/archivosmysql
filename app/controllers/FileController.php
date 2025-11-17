@@ -27,7 +27,12 @@ class FileController {
         }
 
         $file = $_FILES['file'];
-        $folder_id = isset($_POST['folder_id']) ? (int)$_POST['folder_id'] : null;
+        $folder_id = isset($_POST['folder_id']) && $_POST['folder_id'] !== '' ? (int)$_POST['folder_id'] : null;
+
+        // Convertir 0 a null
+        if ($folder_id === 0) {
+            $folder_id = null;
+        }
 
         // Validar tamaño
         if ($file['size'] > MAX_UPLOAD_SIZE) {
@@ -84,7 +89,12 @@ class FileController {
 
         $id = isset($_POST['file_id']) ? (int)$_POST['file_id'] : 0;
         $name = isset($_POST['name']) ? trim($_POST['name']) : '';
-        $folder_id = isset($_POST['folder_id']) ? (int)$_POST['folder_id'] : null;
+        $folder_id = isset($_POST['folder_id']) && $_POST['folder_id'] !== '' ? (int)$_POST['folder_id'] : null;
+
+        // Convertir 0 a null
+        if ($folder_id === 0) {
+            $folder_id = null;
+        }
 
         if ($id && $name) {
             if ($this->fileModel->updateName($id, $name)) {
@@ -108,7 +118,12 @@ class FileController {
         }
 
         $id = isset($_POST['file_id']) ? (int)$_POST['file_id'] : 0;
-        $folder_id = isset($_POST['folder_id']) ? (int)$_POST['folder_id'] : null;
+        $folder_id = isset($_POST['folder_id']) && $_POST['folder_id'] !== '' ? (int)$_POST['folder_id'] : null;
+
+        // Convertir 0 a null
+        if ($folder_id === 0) {
+            $folder_id = null;
+        }
 
         if ($id) {
             if ($this->fileModel->delete($id)) {
@@ -163,7 +178,12 @@ class FileController {
         $file_id = isset($_POST['file_id']) ? (int)$_POST['file_id'] : 0;
         $meta_key = isset($_POST['meta_key']) ? trim($_POST['meta_key']) : '';
         $meta_value = isset($_POST['meta_value']) ? trim($_POST['meta_value']) : null;
-        $folder_id = isset($_POST['folder_id']) ? (int)$_POST['folder_id'] : null;
+        $folder_id = isset($_POST['folder_id']) && $_POST['folder_id'] !== '' ? (int)$_POST['folder_id'] : null;
+
+        // Convertir 0 a null
+        if ($folder_id === 0) {
+            $folder_id = null;
+        }
 
         if ($file_id && $meta_key) {
             $this->metaKeyModel->add('file', $file_id, $meta_key, $meta_value);
@@ -184,7 +204,12 @@ class FileController {
         }
 
         $meta_id = isset($_POST['meta_id']) ? (int)$_POST['meta_id'] : 0;
-        $folder_id = isset($_POST['folder_id']) ? (int)$_POST['folder_id'] : null;
+        $folder_id = isset($_POST['folder_id']) && $_POST['folder_id'] !== '' ? (int)$_POST['folder_id'] : null;
+
+        // Convertir 0 a null
+        if ($folder_id === 0) {
+            $folder_id = null;
+        }
 
         if ($meta_id) {
             $this->metaKeyModel->delete($meta_id);

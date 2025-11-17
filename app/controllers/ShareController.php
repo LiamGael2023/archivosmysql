@@ -25,7 +25,12 @@ class ShareController {
         $entity_type = isset($_POST['entity_type']) ? $_POST['entity_type'] : '';
         $entity_id = isset($_POST['entity_id']) ? (int)$_POST['entity_id'] : 0;
         $expires_days = isset($_POST['expires_days']) ? (int)$_POST['expires_days'] : 0;
-        $folder_id = isset($_POST['folder_id']) ? (int)$_POST['folder_id'] : null;
+        $folder_id = isset($_POST['folder_id']) && $_POST['folder_id'] !== '' ? (int)$_POST['folder_id'] : null;
+
+        // Convertir 0 a null
+        if ($folder_id === 0) {
+            $folder_id = null;
+        }
 
         $expires_at = null;
         if ($expires_days > 0) {
@@ -98,7 +103,12 @@ class ShareController {
         }
 
         $share_id = isset($_POST['share_id']) ? (int)$_POST['share_id'] : 0;
-        $folder_id = isset($_POST['folder_id']) ? (int)$_POST['folder_id'] : null;
+        $folder_id = isset($_POST['folder_id']) && $_POST['folder_id'] !== '' ? (int)$_POST['folder_id'] : null;
+
+        // Convertir 0 a null
+        if ($folder_id === 0) {
+            $folder_id = null;
+        }
 
         if ($share_id) {
             $this->shareModel->delete($share_id);
