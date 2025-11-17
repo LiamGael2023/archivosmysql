@@ -12,7 +12,7 @@ class FileController {
     }
 
     /**
-     * Subir archivo
+     * Subir archivo(s)
      */
     public function upload() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -20,13 +20,12 @@ class FileController {
             exit;
         }
 
-        if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
-            $_SESSION['error'] = 'Error al subir el archivo';
+        if (!isset($_FILES['files'])) {
+            $_SESSION['error'] = 'No se seleccionaron archivos';
             header('Location: ' . BASE_URL);
             exit;
         }
 
-        $file = $_FILES['file'];
         $folder_id = isset($_POST['folder_id']) && $_POST['folder_id'] !== '' ? (int)$_POST['folder_id'] : null;
 
         // Convertir 0 a null
@@ -34,44 +33,77 @@ class FileController {
             $folder_id = null;
         }
 
-        // Validar tamaño
-        if ($file['size'] > MAX_UPLOAD_SIZE) {
-            $_SESSION['error'] = 'El archivo excede el tamaño máximo permitido';
-            header('Location: ' . BASE_URL . ($folder_id ? '?folder=' . $folder_id : ''));
-            exit;
-        }
+        $files = $_FILES['files'];
+        $uploadedCount = 0;
+        $errorCount = 0;
+        $errors = [];
 
-        // Generar nombre único
-        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename = uniqid() . '_' . time() . '.' . $extension;
-        $filepath = UPLOAD_DIR . $filename;
-
-        // Mover archivo
-        if (move_uploaded_file($file['tmp_name'], $filepath)) {
-            $data = [
-                'name' => pathinfo($file['name'], PATHINFO_FILENAME),
-                'original_name' => $file['name'],
-                'file_path' => $filepath,
-                'extension' => $extension,
-                'size' => $file['size'],
-                'mime_type' => $file['type'],
-                'folder_id' => $folder_id
-            ];
-
-            $file_id = $this->fileModel->create($data);
-
-            // Agregar metakeys si existen
-            if (isset($_POST['meta_keys']) && is_array($_POST['meta_keys'])) {
-                foreach ($_POST['meta_keys'] as $meta) {
-                    if (!empty($meta['key'])) {
-                        $this->metaKeyModel->add('file', $file_id, $meta['key'], $meta['value'] ?? null);
-                    }
-                }
+        // Procesar cada archivo
+        for ($i = 0; $i < count($files['name']); $i++) {
+            // Verificar si hubo error en la subida
+            if ($files['error'][$i] !== UPLOAD_ERR_OK) {
+                $errorCount++;
+                $errors[] = $files['name'][$i] . ': Error al subir';
+                continue;
             }
 
-            $_SESSION['success'] = 'Archivo subido correctamente';
+            // Validar tamaño
+            if ($files['size'][$i] > MAX_UPLOAD_SIZE) {
+                $errorCount++;
+                $errors[] = $files['name'][$i] . ': Excede el tamaño máximo permitido';
+                continue;
+            }
+
+            // Generar nombre único
+            $extension = pathinfo($files['name'][$i], PATHINFO_EXTENSION);
+            $filename = uniqid() . '_' . time() . '_' . $i . '.' . $extension;
+            $filepath = UPLOAD_DIR . $filename;
+
+            // Mover archivo
+            if (move_uploaded_file($files['tmp_name'][$i], $filepath)) {
+                $data = [
+                    'name' => pathinfo($files['name'][$i], PATHINFO_FILENAME),
+                    'original_name' => $files['name'][$i],
+                    'file_path' => $filepath,
+                    'extension' => $extension,
+                    'size' => $files['size'][$i],
+                    'mime_type' => $files['type'][$i],
+                    'folder_id' => $folder_id
+                ];
+
+                $file_id = $this->fileModel->create($data);
+
+                // Agregar metakeys si existen (solo al primer archivo para simplificar)
+                if ($i === 0 && isset($_POST['meta_keys']) && is_array($_POST['meta_keys'])) {
+                    foreach ($_POST['meta_keys'] as $meta) {
+                        if (!empty($meta['key'])) {
+                            $this->metaKeyModel->add('file', $file_id, $meta['key'], $meta['value'] ?? null);
+                        }
+                    }
+                }
+
+                $uploadedCount++;
+            } else {
+                $errorCount++;
+                $errors[] = $files['name'][$i] . ': Error al guardar';
+            }
+        }
+
+        // Establecer mensaje de resultado
+        if ($uploadedCount > 0 && $errorCount === 0) {
+            $_SESSION['success'] = $uploadedCount === 1
+                ? 'Archivo subido correctamente'
+                : $uploadedCount . ' archivos subidos correctamente';
+        } elseif ($uploadedCount > 0 && $errorCount > 0) {
+            $_SESSION['success'] = $uploadedCount . ' archivo(s) subido(s). ' . $errorCount . ' error(es)';
+            if (!empty($errors)) {
+                $_SESSION['error'] = implode(', ', $errors);
+            }
         } else {
-            $_SESSION['error'] = 'Error al guardar el archivo';
+            $_SESSION['error'] = 'Error al subir los archivos';
+            if (!empty($errors)) {
+                $_SESSION['error'] .= ': ' . implode(', ', $errors);
+            }
         }
 
         header('Location: ' . BASE_URL . ($folder_id ? '?folder=' . $folder_id : ''));

@@ -409,9 +409,9 @@ if (isset($data) && is_array($data)) {
                     <div class="modal-body">
                         <input type="hidden" name="folder_id" value="<?= $currentFolder ?>">
                         <div class="mb-3">
-                            <label class="form-label required">Seleccionar archivo</label>
-                            <input type="file" name="file" class="form-control" required>
-                            <small class="form-hint">Tamaño máximo: 100MB</small>
+                            <label class="form-label required">Seleccionar archivo(s)</label>
+                            <input type="file" name="files[]" class="form-control" multiple required>
+                            <small class="form-hint">Puedes seleccionar múltiples archivos. Tamaño máximo por archivo: 100MB</small>
                         </div>
 
                         <div id="metaKeysContainer">
