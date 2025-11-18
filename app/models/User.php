@@ -132,7 +132,11 @@ class User {
      * Actualizar último login
      */
     public function updateLastLogin($id) {
-        $sql = "UPDATE users SET last_login = NOW() WHERE id = :id";
+        // Usar función correcta según el driver
+        $driver = defined('DB_DRIVER') ? DB_DRIVER : 'mysql';
+        $dateFunc = ($driver === 'sqlsrv') ? 'GETDATE()' : 'NOW()';
+
+        $sql = "UPDATE users SET last_login = $dateFunc WHERE id = :id";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute(['id' => $id]);
     }
