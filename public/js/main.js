@@ -18,35 +18,35 @@ function updateDirection(dir) {
 
 // Funciones de archivos
 function renameFile(fileId, currentName) {
-    const newName = prompt('Nuevo nombre del archivo:', currentName);
-    if (newName && newName !== currentName) {
-        submitForm(BASE_URL + '/file/rename', {
-            file_id: fileId,
-            name: newName,
-            folder_id: currentFolder || ''
-        });
-    }
+    document.getElementById('renameFileId').value = fileId;
+    document.getElementById('renameFileName').value = currentName;
+    const modal = new bootstrap.Modal(document.getElementById('renameFileModal'));
+    modal.show();
+    // Enfocar el campo de texto
+    setTimeout(() => {
+        document.getElementById('renameFileName').focus();
+        document.getElementById('renameFileName').select();
+    }, 300);
 }
 
 function deleteFile(fileId) {
-    if (confirm('¿Estás seguro de eliminar este archivo?\n\nEsta acción no se puede deshacer.')) {
+    document.getElementById('deleteMessage').textContent = 'El archivo será eliminado permanentemente. Esta acción no se puede deshacer.';
+    document.getElementById('deleteConfirmBtn').onclick = function() {
         submitForm(BASE_URL + '/file/delete', {
             file_id: fileId,
             folder_id: currentFolder || ''
         });
-    }
+    };
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    modal.show();
 }
 
-function shareFile(fileId) {
-    const days = prompt('¿Cuántos días será válido el enlace?\n\n0 = sin expiración (indefinido)\n7 = una semana\n30 = un mes', '0');
-    if (days !== null) {
-        submitForm(BASE_URL + '/share/create', {
-            entity_type: 'file',
-            entity_id: fileId,
-            expires_days: days,
-            folder_id: currentFolder || ''
-        });
-    }
+function shareFile(fileId, fileName) {
+    document.getElementById('shareEntityType').value = 'file';
+    document.getElementById('shareEntityId').value = fileId;
+    document.getElementById('shareEntityName').value = fileName || 'Archivo';
+    const modal = new bootstrap.Modal(document.getElementById('shareModal'));
+    modal.show();
 }
 
 // Previsualizar archivo
@@ -174,35 +174,35 @@ function previewFile(fileId, fileName, extension) {
 
 // Funciones de carpetas
 function renameFolder(folderId, currentName) {
-    const newName = prompt('Nuevo nombre de la carpeta:', currentName);
-    if (newName && newName !== currentName) {
-        submitForm(BASE_URL + '/folder/rename', {
-            folder_id: folderId,
-            name: newName,
-            parent_id: currentFolder || ''
-        });
-    }
+    document.getElementById('renameFolderId').value = folderId;
+    document.getElementById('renameFolderName').value = currentName;
+    const modal = new bootstrap.Modal(document.getElementById('renameFolderModal'));
+    modal.show();
+    // Enfocar el campo de texto
+    setTimeout(() => {
+        document.getElementById('renameFolderName').focus();
+        document.getElementById('renameFolderName').select();
+    }, 300);
 }
 
 function deleteFolder(folderId) {
-    if (confirm('¿Estás seguro de eliminar esta carpeta?\n\nSe eliminarán todos sus contenidos (subcarpetas y archivos).\nEsta acción no se puede deshacer.')) {
+    document.getElementById('deleteMessage').textContent = 'La carpeta y todo su contenido (subcarpetas y archivos) serán eliminados permanentemente.';
+    document.getElementById('deleteConfirmBtn').onclick = function() {
         submitForm(BASE_URL + '/folder/delete', {
             folder_id: folderId,
             parent_id: currentFolder || ''
         });
-    }
+    };
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    modal.show();
 }
 
-function shareFolder(folderId) {
-    const days = prompt('¿Cuántos días será válido el enlace?\n\n0 = sin expiración (indefinido)\n7 = una semana\n30 = un mes', '0');
-    if (days !== null) {
-        submitForm(BASE_URL + '/share/create', {
-            entity_type: 'folder',
-            entity_id: folderId,
-            expires_days: days,
-            folder_id: currentFolder || ''
-        });
-    }
+function shareFolder(folderId, folderName) {
+    document.getElementById('shareEntityType').value = 'folder';
+    document.getElementById('shareEntityId').value = folderId;
+    document.getElementById('shareEntityName').value = folderName || 'Carpeta';
+    const modal = new bootstrap.Modal(document.getElementById('shareModal'));
+    modal.show();
 }
 
 // Funciones de metakeys

@@ -16,7 +16,7 @@ if (isset($data) && is_array($data)) {
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet"/>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css?v=5.0">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css?v=6.0">
 </head>
 <body>
     <div class="page">
@@ -250,7 +250,7 @@ if (isset($data) && is_array($data)) {
                                                         <button class="btn btn-sm btn-ghost-secondary" onclick="event.preventDefault(); renameFolder(<?= $folder['id'] ?>, '<?= htmlspecialchars($folder['name'], ENT_QUOTES) ?>')">
                                                             <i class="ti ti-edit icon"></i>
                                                         </button>
-                                                        <button class="btn btn-sm btn-ghost-info" onclick="event.preventDefault(); shareFolder(<?= $folder['id'] ?>)">
+                                                        <button class="btn btn-sm btn-ghost-info" onclick="event.preventDefault(); shareFolder(<?= $folder['id'] ?>, '<?= htmlspecialchars($folder['name'], ENT_QUOTES) ?>')">
                                                             <i class="ti ti-share icon"></i>
                                                         </button>
                                                         <?php if ($folder['id'] != 1): ?>
@@ -357,7 +357,7 @@ if (isset($data) && is_array($data)) {
                                                         <button class="btn btn-sm btn-ghost-info" onclick="renameFile(<?= $file['id'] ?>, '<?= htmlspecialchars($file['name'], ENT_QUOTES) ?>')" title="Renombrar">
                                                             <i class="ti ti-edit icon"></i>
                                                         </button>
-                                                        <button class="btn btn-sm btn-ghost-warning" onclick="shareFile(<?= $file['id'] ?>)" title="Compartir">
+                                                        <button class="btn btn-sm btn-ghost-warning" onclick="shareFile(<?= $file['id'] ?>, '<?= htmlspecialchars($file['name'], ENT_QUOTES) ?>')" title="Compartir">
                                                             <i class="ti ti-share icon"></i>
                                                         </button>
                                                         <button class="btn btn-sm btn-ghost-danger" onclick="deleteFile(<?= $file['id'] ?>)" title="Eliminar">
@@ -454,6 +454,131 @@ if (isset($data) && is_array($data)) {
                     <a href="#" id="previewDownloadBtn" class="btn btn-primary">
                         <i class="ti ti-download icon"></i> Descargar
                     </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Renombrar Archivo -->
+    <div class="modal modal-blur fade" id="renameFileModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="ti ti-edit icon me-2"></i>Renombrar Archivo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="<?= BASE_URL ?>/file/rename">
+                    <div class="modal-body">
+                        <input type="hidden" name="file_id" id="renameFileId">
+                        <input type="hidden" name="folder_id" value="<?= $currentFolder ?>">
+                        <div class="mb-3">
+                            <label class="form-label required">Nuevo nombre</label>
+                            <input type="text" name="name" id="renameFileName" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="ti ti-check icon"></i> Guardar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Renombrar Carpeta -->
+    <div class="modal modal-blur fade" id="renameFolderModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="ti ti-folder-edit icon me-2"></i>Renombrar Carpeta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="<?= BASE_URL ?>/folder/rename">
+                    <div class="modal-body">
+                        <input type="hidden" name="folder_id" id="renameFolderId">
+                        <input type="hidden" name="parent_id" value="<?= $currentFolder ?>">
+                        <div class="mb-3">
+                            <label class="form-label required">Nuevo nombre</label>
+                            <input type="text" name="name" id="renameFolderName" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="ti ti-check icon"></i> Guardar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Compartir -->
+    <div class="modal modal-blur fade" id="shareModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="ti ti-share icon me-2"></i>Compartir</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="<?= BASE_URL ?>/share/create">
+                    <div class="modal-body">
+                        <input type="hidden" name="entity_type" id="shareEntityType">
+                        <input type="hidden" name="entity_id" id="shareEntityId">
+                        <input type="hidden" name="folder_id" value="<?= $currentFolder ?>">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre del elemento</label>
+                            <input type="text" id="shareEntityName" class="form-control" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Duración del enlace</label>
+                            <select name="expires_days" class="form-select">
+                                <option value="0">Sin expiración (indefinido)</option>
+                                <option value="1">1 día</option>
+                                <option value="7">7 días (una semana)</option>
+                                <option value="30">30 días (un mes)</option>
+                                <option value="90">90 días (tres meses)</option>
+                                <option value="365">365 días (un año)</option>
+                            </select>
+                            <small class="form-hint">Selecciona cuánto tiempo será válido el enlace público</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-info">
+                            <i class="ti ti-link icon"></i> Crear enlace
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Confirmar Eliminación -->
+    <div class="modal modal-blur fade" id="deleteModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-status bg-danger"></div>
+                <div class="modal-body text-center py-4">
+                    <i class="ti ti-alert-triangle icon mb-2 text-danger icon-lg"></i>
+                    <h3>¿Estás seguro?</h3>
+                    <p class="text-muted" id="deleteMessage">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <div class="w-100">
+                        <div class="row">
+                            <div class="col">
+                                <button type="button" class="btn w-100" data-bs-dismiss="modal">Cancelar</button>
+                            </div>
+                            <div class="col">
+                                <button type="button" class="btn btn-danger w-100" id="deleteConfirmBtn">
+                                    <i class="ti ti-trash icon"></i> Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
