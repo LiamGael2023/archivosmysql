@@ -32,7 +32,7 @@
             <div class="card card-md">
                 <div class="card-body">
                     <div class="text-center mb-4">
-                        <i class="ti ti-folder login-logo"></i>
+                        <img src="https://www.chavimochic.gob.pe/sgrhi_app/assets/images/logo/logoPECH.png" alt="Logo" style="max-width: 150px; margin-bottom: 1rem;">
                         <h2 class="h2 mt-2">Sistema de Archivos</h2>
                         <p class="text-muted">Ingrese sus credenciales para continuar</p>
                     </div>

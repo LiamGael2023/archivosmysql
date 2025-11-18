@@ -27,8 +27,8 @@ if (isset($data) && is_array($data)) {
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
-                    <a href="<?= BASE_URL ?>">
-                        <i class="ti ti-folders icon me-2"></i>
+                    <a href="<?= BASE_URL ?>" class="d-flex align-items-center">
+                        <img src="https://www.chavimochic.gob.pe/sgrhi_app/assets/images/logo/logoPECH.png" alt="Logo" style="height: 40px; margin-right: 10px;">
                         Sistema de Archivos
                     </a>
                 </h1>
