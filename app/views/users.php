@@ -18,8 +18,10 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
-                    <i class="ti ti-folder me-2"></i>
-                    Sistema de Archivos
+                    <a href="<?= BASE_URL ?>" class="d-flex align-items-center text-reset text-decoration-none">
+                        <img src="https://www.chavimochic.gob.pe/sgrhi_app/assets/images/logo/logoPECH.png" alt="Logo" style="height: 40px; margin-right: 10px;">
+                        Sistema de Archivos
+                    </a>
                 </h1>
                 <div class="navbar-nav flex-row order-md-last">
                     <div class="nav-item dropdown">
