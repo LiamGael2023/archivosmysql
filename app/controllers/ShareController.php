@@ -234,6 +234,11 @@ class ShareController {
         $folder = $this->folderModel->getById($folder_id);
         $folderName = $folder ? $folder['name'] : 'carpeta';
 
+        // Verificar que la extensión ZIP esté disponible
+        if (!class_exists('ZipArchive')) {
+            die('Error: La extensión ZIP de PHP no está habilitada. Para habilitarla en XAMPP, edita el archivo php.ini y descomenta la línea: extension=zip');
+        }
+
         // Crear archivo ZIP temporal
         $zipFileName = $folderName . '_' . date('Y-m-d_H-i-s') . '.zip';
         $zipFilePath = sys_get_temp_dir() . '/' . $zipFileName;
