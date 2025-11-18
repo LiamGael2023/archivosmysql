@@ -17,6 +17,8 @@ class ShareController {
      * Crear enlace compartido
      */
     public function create() {
+        AuthController::requirePermission('can_share');
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL);
             exit;
@@ -282,6 +284,8 @@ class ShareController {
      * Eliminar enlace compartido
      */
     public function delete() {
+        AuthController::requirePermission('can_share');
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL);
             exit;
@@ -308,6 +312,8 @@ class ShareController {
      * Listar enlaces de una entidad
      */
     public function listLinks() {
+        AuthController::requirePermission('can_share');
+
         $entity_type = isset($_GET['entity_type']) ? $_GET['entity_type'] : '';
         $entity_id = isset($_GET['entity_id']) ? (int)$_GET['entity_id'] : 0;
 

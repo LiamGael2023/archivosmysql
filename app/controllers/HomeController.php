@@ -17,6 +17,9 @@ class HomeController {
      * Vista principal
      */
     public function index() {
+        // Requerir autenticación
+        AuthController::requireAuth();
+
         $folder_id = isset($_GET['folder']) ? (int)$_GET['folder'] : null;
         $orderBy = isset($_GET['order']) ? $_GET['order'] : 'name';
         $orderDir = isset($_GET['dir']) ? $_GET['dir'] : 'ASC';
@@ -52,6 +55,9 @@ class HomeController {
         // Obtener todos los metakeys únicos para el filtro
         $allMetaKeys = $this->metaKeyModel->getAllUniqueKeys();
 
+        // Obtener usuario actual y permisos
+        $currentUser = AuthController::getCurrentUser();
+
         $data = [
             'files' => $filesWithMeta,
             'folders' => $folders,
@@ -63,7 +69,8 @@ class HomeController {
             'search' => $search,
             'filterKey' => $filterKey,
             'filterValue' => $filterValue,
-            'allMetaKeys' => $allMetaKeys
+            'allMetaKeys' => $allMetaKeys,
+            'currentUser' => $currentUser
         ];
 
         require_once __DIR__ . '/../views/home.php';

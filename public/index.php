@@ -34,6 +34,48 @@ switch ($request) {
         $controller->index();
         break;
 
+    // Rutas de autenticación
+    case '/login':
+        $controller = new AuthController();
+        $controller->loginForm();
+        break;
+
+    case '/auth/login':
+        $controller = new AuthController();
+        $controller->login();
+        break;
+
+    case '/logout':
+        $controller = new AuthController();
+        $controller->logout();
+        break;
+
+    // Rutas de gestión de usuarios
+    case '/users':
+        $controller = new UserController();
+        $controller->index();
+        break;
+
+    case '/user/create':
+        $controller = new UserController();
+        $controller->create();
+        break;
+
+    case '/user/update':
+        $controller = new UserController();
+        $controller->update();
+        break;
+
+    case '/user/delete':
+        $controller = new UserController();
+        $controller->delete();
+        break;
+
+    case '/user/get':
+        $controller = new UserController();
+        $controller->get();
+        break;
+
     // Rutas de archivos
     case '/file/upload':
         $controller = new FileController();

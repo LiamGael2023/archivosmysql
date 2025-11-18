@@ -15,6 +15,8 @@ class FileController {
      * Subir archivo(s)
      */
     public function upload() {
+        AuthController::requirePermission('can_upload');
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL);
             exit;
@@ -114,6 +116,8 @@ class FileController {
      * Renombrar archivo
      */
     public function rename() {
+        AuthController::requirePermission('can_edit');
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL);
             exit;
@@ -144,6 +148,8 @@ class FileController {
      * Eliminar archivo
      */
     public function delete() {
+        AuthController::requirePermission('can_delete');
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL);
             exit;
@@ -173,6 +179,8 @@ class FileController {
      * Descargar archivo
      */
     public function download() {
+        AuthController::requireAuth();
+
         $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
         if (!$id) {
@@ -202,6 +210,8 @@ class FileController {
      * Previsualizar archivo (para imágenes, PDFs, etc.)
      */
     public function preview() {
+        AuthController::requireAuth();
+
         $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
         if (!$id) {
@@ -240,6 +250,8 @@ class FileController {
      * Agregar metakey a archivo
      */
     public function addMetaKey() {
+        AuthController::requirePermission('can_edit');
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL);
             exit;
@@ -268,6 +280,8 @@ class FileController {
      * Eliminar metakey
      */
     public function deleteMetaKey() {
+        AuthController::requirePermission('can_edit');
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL);
             exit;

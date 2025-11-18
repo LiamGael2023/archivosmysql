@@ -41,6 +41,28 @@ if (isset($data) && is_array($data)) {
                             </span>
                         </form>
                     </div>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown">
+                            <span class="avatar avatar-sm bg-primary-lt">
+                                <?= strtoupper(substr($currentUser['username'], 0, 2)) ?>
+                            </span>
+                            <div class="d-none d-xl-block ps-2">
+                                <div><?= htmlspecialchars($currentUser['full_name'] ?: $currentUser['username']) ?></div>
+                                <div class="mt-1 small text-muted"><?= htmlspecialchars($currentUser['role_name']) ?></div>
+                            </div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                            <?php if ($currentUser['can_manage_users']): ?>
+                            <a href="<?= BASE_URL ?>/users" class="dropdown-item">
+                                <i class="ti ti-users icon me-2"></i>Gestionar Usuarios
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <?php endif; ?>
+                            <a href="<?= BASE_URL ?>/logout" class="dropdown-item">
+                                <i class="ti ti-logout icon me-2"></i>Cerrar Sesión
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
@@ -144,6 +166,7 @@ if (isset($data) && is_array($data)) {
                                     <?php endif; ?>
                                 </h2>
                             </div>
+                            <?php if ($currentUser['can_upload']): ?>
                             <div class="col-auto ms-auto d-print-none">
                                 <div class="btn-list">
                                     <button class="btn btn-primary d-none d-sm-inline-block" data-bs-toggle="modal" data-bs-target="#newFolderModal">
@@ -163,6 +186,7 @@ if (isset($data) && is_array($data)) {
                                     </button>
                                 </div>
                             </div>
+                            <?php endif; ?>
                         </div>
                     </div>
 
@@ -247,13 +271,17 @@ if (isset($data) && is_array($data)) {
                                                 </a>
                                                 <div class="card-footer">
                                                     <div class="d-flex justify-content-center gap-2">
+                                                        <?php if ($currentUser['can_edit']): ?>
                                                         <button class="btn btn-sm btn-ghost-secondary" onclick="event.preventDefault(); renameFolder(<?= $folder['id'] ?>, '<?= htmlspecialchars($folder['name'], ENT_QUOTES) ?>')">
                                                             <i class="ti ti-edit icon"></i>
                                                         </button>
+                                                        <?php endif; ?>
+                                                        <?php if ($currentUser['can_share']): ?>
                                                         <button class="btn btn-sm btn-ghost-info" onclick="event.preventDefault(); shareFolder(<?= $folder['id'] ?>, '<?= htmlspecialchars($folder['name'], ENT_QUOTES) ?>')">
                                                             <i class="ti ti-share icon"></i>
                                                         </button>
-                                                        <?php if ($folder['id'] != 1): ?>
+                                                        <?php endif; ?>
+                                                        <?php if ($currentUser['can_delete'] && $folder['id'] != 1): ?>
                                                         <button class="btn btn-sm btn-ghost-danger" onclick="event.preventDefault(); deleteFolder(<?= $folder['id'] ?>)">
                                                             <i class="ti ti-trash icon"></i>
                                                         </button>
@@ -338,12 +366,16 @@ if (isset($data) && is_array($data)) {
                                                                 <?php if ($meta['meta_value']): ?>
                                                                     : <?= htmlspecialchars($meta['meta_value']) ?>
                                                                 <?php endif; ?>
+                                                                <?php if ($currentUser['can_edit']): ?>
                                                                 <a href="#" onclick="event.preventDefault(); deleteMeta(<?= $meta['id'] ?>)" class="ms-1 text-reset">×</a>
+                                                                <?php endif; ?>
                                                             </span>
                                                         <?php endforeach; ?>
+                                                        <?php if ($currentUser['can_edit']): ?>
                                                         <button class="badge bg-success" onclick="addMeta(<?= $file['id'] ?>)" style="border:none;">
                                                             <i class="ti ti-plus icon"></i>
                                                         </button>
+                                                        <?php endif; ?>
                                                     </div>
                                                 </td>
                                                 <td>
@@ -354,15 +386,21 @@ if (isset($data) && is_array($data)) {
                                                         <a href="<?= BASE_URL ?>/file/download?id=<?= $file['id'] ?>" class="btn btn-sm btn-ghost-secondary" title="Descargar">
                                                             <i class="ti ti-download icon"></i>
                                                         </a>
+                                                        <?php if ($currentUser['can_edit']): ?>
                                                         <button class="btn btn-sm btn-ghost-info" onclick="renameFile(<?= $file['id'] ?>, '<?= htmlspecialchars($file['name'], ENT_QUOTES) ?>')" title="Renombrar">
                                                             <i class="ti ti-edit icon"></i>
                                                         </button>
+                                                        <?php endif; ?>
+                                                        <?php if ($currentUser['can_share']): ?>
                                                         <button class="btn btn-sm btn-ghost-warning" onclick="shareFile(<?= $file['id'] ?>, '<?= htmlspecialchars($file['name'], ENT_QUOTES) ?>')" title="Compartir">
                                                             <i class="ti ti-share icon"></i>
                                                         </button>
+                                                        <?php endif; ?>
+                                                        <?php if ($currentUser['can_delete']): ?>
                                                         <button class="btn btn-sm btn-ghost-danger" onclick="deleteFile(<?= $file['id'] ?>)" title="Eliminar">
                                                             <i class="ti ti-trash icon"></i>
                                                         </button>
+                                                        <?php endif; ?>
                                                     </div>
                                                 </td>
                                             </tr>

@@ -13,6 +13,8 @@ class FolderController {
      * Crear carpeta
      */
     public function create() {
+        AuthController::requirePermission('can_upload');
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL);
             exit;
@@ -41,6 +43,8 @@ class FolderController {
      * Renombrar carpeta
      */
     public function rename() {
+        AuthController::requirePermission('can_edit');
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL);
             exit;
@@ -71,6 +75,8 @@ class FolderController {
      * Eliminar carpeta
      */
     public function delete() {
+        AuthController::requirePermission('can_delete');
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL);
             exit;

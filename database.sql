@@ -59,5 +59,47 @@ CREATE TABLE IF NOT EXISTS shared_links (
     INDEX idx_active (is_active)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Tabla de roles
+CREATE TABLE IF NOT EXISTS roles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    description VARCHAR(255),
+    can_upload TINYINT(1) DEFAULT 0,
+    can_edit TINYINT(1) DEFAULT 0,
+    can_delete TINYINT(1) DEFAULT 0,
+    can_share TINYINT(1) DEFAULT 0,
+    can_manage_users TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabla de usuarios
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    full_name VARCHAR(100),
+    role_id INT NOT NULL,
+    is_active TINYINT(1) DEFAULT 1,
+    last_login TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (role_id) REFERENCES roles(id),
+    INDEX idx_username (username),
+    INDEX idx_email (email),
+    INDEX idx_role (role_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Insertar carpeta raíz
 INSERT INTO folders (id, name, parent_id) VALUES (1, 'Root', NULL);
+
+-- Insertar roles predeterminados
+INSERT INTO roles (name, description, can_upload, can_edit, can_delete, can_share, can_manage_users) VALUES
+('admin', 'Administrador - Acceso total al sistema', 1, 1, 1, 1, 1),
+('editor', 'Editor - Puede subir, editar, eliminar y compartir', 1, 1, 1, 1, 0),
+('collaborator', 'Colaborador - Puede subir y compartir', 1, 0, 0, 1, 0),
+('viewer', 'Lector - Solo puede ver y descargar', 0, 0, 0, 0, 0);
+
+-- Insertar usuario administrador por defecto (password: admin123)
+INSERT INTO users (username, email, password, full_name, role_id) VALUES
+('admin', 'admin@sistema.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Administrador', 1);
