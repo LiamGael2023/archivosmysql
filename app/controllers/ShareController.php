@@ -70,19 +70,16 @@ class ShareController {
         }
 
         if ($shareDetails['entity_type'] === 'file') {
-            // Descargar archivo
-            if (!file_exists($shareDetails['file_path'])) {
+            // Mostrar vista de archivo compartido
+            $file = $this->fileModel->getById($shareDetails['entity_id']);
+            if (!$file || !file_exists($file['file_path'])) {
                 die('Archivo no encontrado');
             }
 
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="' . $shareDetails['original_name'] . '"');
-            header('Content-Length: ' . filesize($shareDetails['file_path']));
-            header('Pragma: public');
+            $files = [$file];
+            $folders = [];
 
-            readfile($shareDetails['file_path']);
-            exit;
+            require_once __DIR__ . '/../views/shared_folder.php';
         } else {
             // Mostrar contenido de carpeta
             $folder_id = $shareDetails['entity_id'];
@@ -91,6 +88,114 @@ class ShareController {
 
             require_once __DIR__ . '/../views/shared_folder.php';
         }
+    }
+
+    /**
+     * Descargar archivo compartido
+     */
+    public function download() {
+        $token = isset($_GET['token']) ? $_GET['token'] : '';
+        $file_id = isset($_GET['file_id']) ? (int)$_GET['file_id'] : 0;
+
+        if (!$token || !$file_id) {
+            die('Parámetros inválidos');
+        }
+
+        if (!$this->shareModel->isValid($token)) {
+            die('El enlace ha expirado o no es válido');
+        }
+
+        $shareDetails = $this->shareModel->getDetailsByToken($token);
+
+        if (!$shareDetails) {
+            die('Recurso no encontrado');
+        }
+
+        // Verificar que el archivo pertenezca al recurso compartido
+        $file = $this->fileModel->getById($file_id);
+
+        if (!$file) {
+            die('Archivo no encontrado');
+        }
+
+        // Si es archivo compartido directamente
+        if ($shareDetails['entity_type'] === 'file' && $shareDetails['entity_id'] != $file_id) {
+            die('Acceso no autorizado');
+        }
+
+        // Si es carpeta compartida, verificar que el archivo esté en esa carpeta
+        if ($shareDetails['entity_type'] === 'folder' && $file['folder_id'] != $shareDetails['entity_id']) {
+            die('Acceso no autorizado');
+        }
+
+        if (!file_exists($file['file_path'])) {
+            die('Archivo no encontrado en el servidor');
+        }
+
+        header('Content-Description: File Transfer');
+        header('Content-Type: ' . $file['mime_type']);
+        header('Content-Disposition: attachment; filename="' . $file['original_name'] . '"');
+        header('Content-Length: ' . $file['size']);
+        header('Pragma: public');
+
+        readfile($file['file_path']);
+        exit;
+    }
+
+    /**
+     * Previsualizar archivo compartido
+     */
+    public function preview() {
+        $token = isset($_GET['token']) ? $_GET['token'] : '';
+        $file_id = isset($_GET['file_id']) ? (int)$_GET['file_id'] : 0;
+
+        if (!$token || !$file_id) {
+            header('HTTP/1.0 400 Bad Request');
+            exit;
+        }
+
+        if (!$this->shareModel->isValid($token)) {
+            header('HTTP/1.0 403 Forbidden');
+            exit;
+        }
+
+        $shareDetails = $this->shareModel->getDetailsByToken($token);
+
+        if (!$shareDetails) {
+            header('HTTP/1.0 404 Not Found');
+            exit;
+        }
+
+        $file = $this->fileModel->getById($file_id);
+
+        if (!$file) {
+            header('HTTP/1.0 404 Not Found');
+            exit;
+        }
+
+        // Verificar acceso
+        if ($shareDetails['entity_type'] === 'file' && $shareDetails['entity_id'] != $file_id) {
+            header('HTTP/1.0 403 Forbidden');
+            exit;
+        }
+
+        if ($shareDetails['entity_type'] === 'folder' && $file['folder_id'] != $shareDetails['entity_id']) {
+            header('HTTP/1.0 403 Forbidden');
+            exit;
+        }
+
+        if (!file_exists($file['file_path'])) {
+            header('HTTP/1.0 404 Not Found');
+            exit;
+        }
+
+        header('Content-Type: ' . $file['mime_type']);
+        header('Content-Length: ' . $file['size']);
+        header('Content-Disposition: inline; filename="' . $file['original_name'] . '"');
+        header('Cache-Control: public, max-age=3600');
+
+        readfile($file['file_path']);
+        exit;
     }
 
     /**

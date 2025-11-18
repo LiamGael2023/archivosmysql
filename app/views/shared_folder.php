@@ -9,7 +9,7 @@ if (isset($data) && is_array($data)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carpeta Compartida - <?= htmlspecialchars($shareDetails['entity_name']) ?></title>
+    <title><?= $shareDetails['entity_type'] === 'file' ? 'Archivo' : 'Carpeta' ?> Compartido - <?= htmlspecialchars($shareDetails['entity_name']) ?></title>
 
     <!-- Tabler CSS -->
     <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta19/dist/css/tabler.min.css" rel="stylesheet"/>
@@ -24,10 +24,15 @@ if (isset($data) && is_array($data)) {
                     <div class="row g-2 align-items-center">
                         <div class="col">
                             <div class="page-pretitle">
-                                <i class="ti ti-share icon me-1"></i> Carpeta Compartida
+                                <i class="ti ti-share icon me-1"></i>
+                                <?= $shareDetails['entity_type'] === 'file' ? 'Archivo Compartido' : 'Carpeta Compartida' ?>
                             </div>
                             <h2 class="page-title">
-                                <i class="ti ti-folder icon me-2" style="color: #FDB927;"></i>
+                                <?php if ($shareDetails['entity_type'] === 'file'): ?>
+                                    <i class="ti ti-file icon me-2" style="color: #206bc4;"></i>
+                                <?php else: ?>
+                                    <i class="ti ti-folder icon me-2" style="color: #FDB927;"></i>
+                                <?php endif; ?>
                                 <?= htmlspecialchars($shareDetails['entity_name']) ?>
                             </h2>
                         </div>
@@ -89,6 +94,7 @@ if (isset($data) && is_array($data)) {
                                             <th>Nombre</th>
                                             <th class="d-none d-md-table-cell">Tamaño</th>
                                             <th class="d-none d-lg-table-cell">Fecha de Creación</th>
+                                            <th class="w-1">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -114,6 +120,16 @@ if (isset($data) && is_array($data)) {
                                                 <div><?= date('Y-m-d', strtotime($file['created_at'])) ?></div>
                                                 <div class="small"><?= date('H:i', strtotime($file['created_at'])) ?></div>
                                             </td>
+                                            <td>
+                                                <div class="btn-list flex-nowrap">
+                                                    <button class="btn btn-sm btn-primary" onclick="previewSharedFile(<?= $file['id'] ?>, '<?= htmlspecialchars($file['original_name'], ENT_QUOTES) ?>', '<?= strtolower($file['extension']) ?>', '<?= $token ?>')" title="Visualizar">
+                                                        <i class="ti ti-eye icon"></i>
+                                                    </button>
+                                                    <a href="<?= BASE_URL ?>/share/download?token=<?= $token ?>&file_id=<?= $file['id'] ?>" class="btn btn-sm btn-success" title="Descargar">
+                                                        <i class="ti ti-download icon"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
                                         </tr>
                                         <?php endforeach; ?>
                                     </tbody>
@@ -131,7 +147,11 @@ if (isset($data) && is_array($data)) {
                             <div class="card-body">
                                 <div class="text-muted text-center">
                                     <i class="ti ti-info-circle icon me-1"></i>
-                                    Esta es una carpeta compartida públicamente. Los archivos están disponibles solo para visualización.
+                                    <?php if ($shareDetails['entity_type'] === 'file'): ?>
+                                        Este archivo ha sido compartido públicamente. Puedes visualizarlo o descargarlo.
+                                    <?php else: ?>
+                                        Esta carpeta ha sido compartida públicamente. Puedes visualizar o descargar los archivos.
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -141,8 +161,165 @@ if (isset($data) && is_array($data)) {
         </div>
     </div>
 
+    <!-- Modal: Previsualizar Archivo -->
+    <div class="modal modal-blur fade" id="previewFileModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="previewFileTitle">
+                        <i class="ti ti-eye icon me-2"></i>
+                        <span id="previewFileName">Vista previa</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0" id="previewFileContent">
+                    <!-- Contenido dinámico -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <a href="#" id="previewDownloadBtn" class="btn btn-primary">
+                        <i class="ti ti-download icon"></i> Descargar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Tabler Core -->
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta19/dist/js/tabler.min.js"></script>
+
+    <script>
+        const BASE_URL = '<?= BASE_URL ?>';
+
+        // Función auxiliar para escapar HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Previsualizar archivo compartido
+        function previewSharedFile(fileId, fileName, extension, token) {
+            const modal = new bootstrap.Modal(document.getElementById('previewFileModal'));
+            const contentContainer = document.getElementById('previewFileContent');
+            const fileNameSpan = document.getElementById('previewFileName');
+            const downloadBtn = document.getElementById('previewDownloadBtn');
+
+            // Actualizar título y botón de descarga
+            fileNameSpan.textContent = fileName;
+            downloadBtn.href = BASE_URL + '/share/download?token=' + token + '&file_id=' + fileId;
+
+            // Extensiones de imagen
+            const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'];
+            // Extensiones de PDF
+            const pdfExtensions = ['pdf'];
+            // Extensiones de texto/código
+            const textExtensions = ['txt', 'html', 'css', 'js', 'json', 'xml', 'md', 'php', 'py', 'java', 'c', 'cpp', 'h'];
+            // Extensiones de video
+            const videoExtensions = ['mp4', 'webm', 'ogg'];
+            // Extensiones de audio
+            const audioExtensions = ['mp3', 'wav', 'ogg', 'flac'];
+
+            const previewUrl = BASE_URL + '/share/preview?token=' + token + '&file_id=' + fileId;
+
+            // Generar contenido según el tipo de archivo
+            if (imageExtensions.includes(extension)) {
+                contentContainer.innerHTML = `
+                    <div class="text-center p-4">
+                        <img src="${previewUrl}" alt="${fileName}" class="img-fluid" style="max-height: 70vh;">
+                    </div>
+                `;
+            } else if (pdfExtensions.includes(extension)) {
+                contentContainer.innerHTML = `
+                    <div style="height: 70vh;">
+                        <iframe src="${previewUrl}" width="100%" height="100%" style="border: none;"></iframe>
+                    </div>
+                `;
+            } else if (videoExtensions.includes(extension)) {
+                contentContainer.innerHTML = `
+                    <div class="text-center p-4">
+                        <video controls class="w-100" style="max-height: 70vh;">
+                            <source src="${previewUrl}" type="video/${extension}">
+                            Tu navegador no soporta la reproducción de video.
+                        </video>
+                    </div>
+                `;
+            } else if (audioExtensions.includes(extension)) {
+                contentContainer.innerHTML = `
+                    <div class="text-center p-4">
+                        <div class="mb-3">
+                            <i class="ti ti-music icon" style="font-size: 4rem; color: #206bc4;"></i>
+                        </div>
+                        <h4>${fileName}</h4>
+                        <audio controls class="w-100 mt-3">
+                            <source src="${previewUrl}" type="audio/${extension === 'mp3' ? 'mpeg' : extension}">
+                            Tu navegador no soporta la reproducción de audio.
+                        </audio>
+                    </div>
+                `;
+            } else if (textExtensions.includes(extension)) {
+                fetch(previewUrl)
+                    .then(response => response.text())
+                    .then(text => {
+                        contentContainer.innerHTML = `
+                            <div class="p-3" style="max-height: 70vh; overflow-y: auto;">
+                                <pre class="mb-0" style="white-space: pre-wrap; word-wrap: break-word;"><code>${escapeHtml(text)}</code></pre>
+                            </div>
+                        `;
+                    })
+                    .catch(error => {
+                        contentContainer.innerHTML = `
+                            <div class="text-center p-4">
+                                <div class="empty">
+                                    <div class="empty-icon text-danger">
+                                        <i class="ti ti-alert-circle icon" style="font-size: 3rem;"></i>
+                                    </div>
+                                    <p class="empty-title">Error al cargar el archivo</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+            } else {
+                // Archivo no previsualizable
+                const fileIcons = {
+                    'doc': 'ti-file-type-doc',
+                    'docx': 'ti-file-type-docx',
+                    'xls': 'ti-file-type-xls',
+                    'xlsx': 'ti-file-type-xls',
+                    'ppt': 'ti-file-type-ppt',
+                    'pptx': 'ti-file-type-ppt',
+                    'zip': 'ti-file-zip',
+                    'rar': 'ti-file-zip',
+                    '7z': 'ti-file-zip',
+                    'exe': 'ti-app-window',
+                    'default': 'ti-file'
+                };
+
+                const iconClass = fileIcons[extension] || fileIcons['default'];
+
+                contentContainer.innerHTML = `
+                    <div class="text-center p-4">
+                        <div class="empty">
+                            <div class="empty-icon">
+                                <i class="${iconClass} icon" style="font-size: 4rem; color: #6c757d;"></i>
+                            </div>
+                            <p class="empty-title">${fileName}</p>
+                            <p class="empty-subtitle text-muted">
+                                Este tipo de archivo (.${extension.toUpperCase()}) no se puede previsualizar directamente.
+                            </p>
+                            <div class="empty-action">
+                                <a href="${BASE_URL}/share/download?token=${token}&file_id=${fileId}" class="btn btn-primary">
+                                    <i class="ti ti-download icon"></i> Descargar archivo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            modal.show();
+        }
+    </script>
 </body>
 </html>
 

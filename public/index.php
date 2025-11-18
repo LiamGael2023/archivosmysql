@@ -92,6 +92,16 @@ switch ($request) {
         $controller->view();
         break;
 
+    case '/share/download':
+        $controller = new ShareController();
+        $controller->download();
+        break;
+
+    case '/share/preview':
+        $controller = new ShareController();
+        $controller->preview();
+        break;
+
     case '/share/create':
         $controller = new ShareController();
         $controller->create();
