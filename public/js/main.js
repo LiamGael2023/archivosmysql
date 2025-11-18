@@ -38,7 +38,7 @@ function deleteFile(fileId) {
 }
 
 function shareFile(fileId) {
-    const days = prompt('¿Cuántos días será válido el enlace?\n\n0 = sin expiración\n7 = una semana\n30 = un mes', '7');
+    const days = prompt('¿Cuántos días será válido el enlace?\n\n0 = sin expiración (indefinido)\n7 = una semana\n30 = un mes', '0');
     if (days !== null) {
         submitForm(BASE_URL + '/share/create', {
             entity_type: 'file',
@@ -47,6 +47,129 @@ function shareFile(fileId) {
             folder_id: currentFolder || ''
         });
     }
+}
+
+// Previsualizar archivo
+function previewFile(fileId, fileName, extension) {
+    const modal = new bootstrap.Modal(document.getElementById('previewFileModal'));
+    const contentContainer = document.getElementById('previewFileContent');
+    const fileNameSpan = document.getElementById('previewFileName');
+    const downloadBtn = document.getElementById('previewDownloadBtn');
+
+    // Actualizar título y botón de descarga
+    fileNameSpan.textContent = fileName;
+    downloadBtn.href = BASE_URL + '/file/download?id=' + fileId;
+
+    // Extensiones de imagen
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'];
+    // Extensiones de PDF
+    const pdfExtensions = ['pdf'];
+    // Extensiones de texto/código
+    const textExtensions = ['txt', 'html', 'css', 'js', 'json', 'xml', 'md', 'php', 'py', 'java', 'c', 'cpp', 'h'];
+    // Extensiones de video
+    const videoExtensions = ['mp4', 'webm', 'ogg'];
+    // Extensiones de audio
+    const audioExtensions = ['mp3', 'wav', 'ogg', 'flac'];
+
+    const previewUrl = BASE_URL + '/file/preview?id=' + fileId;
+
+    // Generar contenido según el tipo de archivo
+    if (imageExtensions.includes(extension)) {
+        contentContainer.innerHTML = `
+            <div class="text-center p-4">
+                <img src="${previewUrl}" alt="${fileName}" class="img-fluid" style="max-height: 70vh;">
+            </div>
+        `;
+    } else if (pdfExtensions.includes(extension)) {
+        contentContainer.innerHTML = `
+            <div style="height: 70vh;">
+                <iframe src="${previewUrl}" width="100%" height="100%" style="border: none;"></iframe>
+            </div>
+        `;
+    } else if (videoExtensions.includes(extension)) {
+        contentContainer.innerHTML = `
+            <div class="text-center p-4">
+                <video controls class="w-100" style="max-height: 70vh;">
+                    <source src="${previewUrl}" type="video/${extension}">
+                    Tu navegador no soporta la reproducción de video.
+                </video>
+            </div>
+        `;
+    } else if (audioExtensions.includes(extension)) {
+        contentContainer.innerHTML = `
+            <div class="text-center p-4">
+                <div class="mb-3">
+                    <i class="ti ti-music icon" style="font-size: 4rem; color: #206bc4;"></i>
+                </div>
+                <h4>${fileName}</h4>
+                <audio controls class="w-100 mt-3">
+                    <source src="${previewUrl}" type="audio/${extension === 'mp3' ? 'mpeg' : extension}">
+                    Tu navegador no soporta la reproducción de audio.
+                </audio>
+            </div>
+        `;
+    } else if (textExtensions.includes(extension)) {
+        // Para archivos de texto, cargar y mostrar el contenido
+        fetch(previewUrl)
+            .then(response => response.text())
+            .then(text => {
+                contentContainer.innerHTML = `
+                    <div class="p-3" style="max-height: 70vh; overflow-y: auto;">
+                        <pre class="mb-0" style="white-space: pre-wrap; word-wrap: break-word;"><code>${escapeHtml(text)}</code></pre>
+                    </div>
+                `;
+            })
+            .catch(error => {
+                contentContainer.innerHTML = `
+                    <div class="text-center p-4">
+                        <div class="empty">
+                            <div class="empty-icon text-danger">
+                                <i class="ti ti-alert-circle icon" style="font-size: 3rem;"></i>
+                            </div>
+                            <p class="empty-title">Error al cargar el archivo</p>
+                        </div>
+                    </div>
+                `;
+            });
+    } else {
+        // Archivo no previsualizable
+        const fileIcons = {
+            'doc': 'ti-file-type-doc',
+            'docx': 'ti-file-type-docx',
+            'xls': 'ti-file-type-xls',
+            'xlsx': 'ti-file-type-xls',
+            'ppt': 'ti-file-type-ppt',
+            'pptx': 'ti-file-type-ppt',
+            'zip': 'ti-file-zip',
+            'rar': 'ti-file-zip',
+            '7z': 'ti-file-zip',
+            'exe': 'ti-app-window',
+            'default': 'ti-file'
+        };
+
+        const iconClass = fileIcons[extension] || fileIcons['default'];
+
+        contentContainer.innerHTML = `
+            <div class="text-center p-4">
+                <div class="empty">
+                    <div class="empty-icon">
+                        <i class="${iconClass} icon" style="font-size: 4rem; color: #6c757d;"></i>
+                    </div>
+                    <p class="empty-title">${fileName}</p>
+                    <p class="empty-subtitle text-muted">
+                        Este tipo de archivo (.${extension.toUpperCase()}) no se puede previsualizar directamente.
+                    </p>
+                    <div class="empty-action">
+                        <a href="${BASE_URL}/file/download?id=${fileId}" class="btn btn-primary">
+                            <i class="ti ti-download icon"></i> Descargar archivo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    modal.show();
 }
 
 // Funciones de carpetas
@@ -71,7 +194,7 @@ function deleteFolder(folderId) {
 }
 
 function shareFolder(folderId) {
-    const days = prompt('¿Cuántos días será válido el enlace?\n\n0 = sin expiración\n7 = una semana\n30 = un mes', '7');
+    const days = prompt('¿Cuántos días será válido el enlace?\n\n0 = sin expiración (indefinido)\n7 = una semana\n30 = un mes', '0');
     if (days !== null) {
         submitForm(BASE_URL + '/share/create', {
             entity_type: 'folder',

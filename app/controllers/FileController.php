@@ -199,6 +199,44 @@ class FileController {
     }
 
     /**
+     * Previsualizar archivo (para imágenes, PDFs, etc.)
+     */
+    public function preview() {
+        $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+        if (!$id) {
+            header('HTTP/1.0 404 Not Found');
+            exit;
+        }
+
+        $file = $this->fileModel->getById($id);
+
+        if (!$file || !file_exists($file['file_path'])) {
+            header('HTTP/1.0 404 Not Found');
+            exit;
+        }
+
+        // Tipos de archivo permitidos para previsualización
+        $previewableTypes = [
+            'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml',
+            'application/pdf',
+            'text/plain', 'text/html', 'text/css', 'text/javascript',
+            'application/json', 'application/xml'
+        ];
+
+        $mimeType = $file['mime_type'];
+
+        // Servir el archivo para previsualización
+        header('Content-Type: ' . $mimeType);
+        header('Content-Length: ' . $file['size']);
+        header('Content-Disposition: inline; filename="' . $file['original_name'] . '"');
+        header('Cache-Control: public, max-age=3600');
+
+        readfile($file['file_path']);
+        exit;
+    }
+
+    /**
      * Agregar metakey a archivo
      */
     public function addMetaKey() {

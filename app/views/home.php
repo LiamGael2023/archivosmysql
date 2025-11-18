@@ -16,7 +16,7 @@ if (isset($data) && is_array($data)) {
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet"/>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css?v=4.0">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css?v=5.0">
 </head>
 <body>
     <div class="page">
@@ -348,13 +348,16 @@ if (isset($data) && is_array($data)) {
                                                 </td>
                                                 <td>
                                                     <div class="btn-list flex-nowrap">
-                                                        <a href="<?= BASE_URL ?>/file/download?id=<?= $file['id'] ?>" class="btn btn-sm btn-ghost-primary" title="Descargar">
+                                                        <button class="btn btn-sm btn-ghost-primary" onclick="previewFile(<?= $file['id'] ?>, '<?= htmlspecialchars($file['original_name'], ENT_QUOTES) ?>', '<?= strtolower($file['extension']) ?>')" title="Visualizar">
+                                                            <i class="ti ti-eye icon"></i>
+                                                        </button>
+                                                        <a href="<?= BASE_URL ?>/file/download?id=<?= $file['id'] ?>" class="btn btn-sm btn-ghost-secondary" title="Descargar">
                                                             <i class="ti ti-download icon"></i>
                                                         </a>
-                                                        <button class="btn btn-sm btn-ghost-secondary" onclick="renameFile(<?= $file['id'] ?>, '<?= htmlspecialchars($file['name'], ENT_QUOTES) ?>')" title="Renombrar">
+                                                        <button class="btn btn-sm btn-ghost-info" onclick="renameFile(<?= $file['id'] ?>, '<?= htmlspecialchars($file['name'], ENT_QUOTES) ?>')" title="Renombrar">
                                                             <i class="ti ti-edit icon"></i>
                                                         </button>
-                                                        <button class="btn btn-sm btn-ghost-info" onclick="shareFile(<?= $file['id'] ?>)" title="Compartir">
+                                                        <button class="btn btn-sm btn-ghost-warning" onclick="shareFile(<?= $file['id'] ?>)" title="Compartir">
                                                             <i class="ti ti-share icon"></i>
                                                         </button>
                                                         <button class="btn btn-sm btn-ghost-danger" onclick="deleteFile(<?= $file['id'] ?>)" title="Eliminar">
@@ -428,6 +431,30 @@ if (isset($data) && is_array($data)) {
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Previsualizar Archivo -->
+    <div class="modal modal-blur fade" id="previewFileModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="previewFileTitle">
+                        <i class="ti ti-eye icon me-2"></i>
+                        <span id="previewFileName">Vista previa</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0" id="previewFileContent">
+                    <!-- Contenido dinámico -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <a href="#" id="previewDownloadBtn" class="btn btn-primary">
+                        <i class="ti ti-download icon"></i> Descargar
+                    </a>
+                </div>
             </div>
         </div>
     </div>

@@ -55,6 +55,11 @@ switch ($request) {
         $controller->download();
         break;
 
+    case '/file/preview':
+        $controller = new FileController();
+        $controller->preview();
+        break;
+
     case '/file/add-meta':
         $controller = new FileController();
         $controller->addMetaKey();
