@@ -413,4 +413,40 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Función para expandir/colapsar carpetas en el árbol
+function toggleTreeFolder(button) {
+    const treeItem = button.closest('.tree-item');
+    const children = treeItem.querySelector('.tree-children');
+    const icon = button.querySelector('i');
+
+    if (children) {
+        treeItem.classList.toggle('collapsed');
+
+        if (treeItem.classList.contains('collapsed')) {
+            icon.className = 'ti ti-chevron-right';
+        } else {
+            icon.className = 'ti ti-chevron-down';
+        }
+    }
+}
+
+// Expandir automáticamente la ruta activa al cargar
+document.addEventListener('DOMContentLoaded', function() {
+    const activeLink = document.querySelector('.folder-tree .tree-link.active');
+    if (activeLink) {
+        let parent = activeLink.closest('.tree-children');
+        while (parent) {
+            const parentItem = parent.closest('.tree-item');
+            if (parentItem) {
+                parentItem.classList.remove('collapsed');
+                const icon = parentItem.querySelector('.tree-toggle i');
+                if (icon) {
+                    icon.className = 'ti ti-chevron-down';
+                }
+            }
+            parent = parentItem ? parentItem.parentElement.closest('.tree-children') : null;
+        }
+    }
+});
+
 console.log('Sistema de Gestión de Archivos cargado correctamente');

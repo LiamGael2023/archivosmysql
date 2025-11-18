@@ -16,7 +16,7 @@ if (isset($data) && is_array($data)) {
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet"/>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css?v=3.1">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css?v=4.0">
 </head>
 <body>
     <div class="page">
@@ -68,19 +68,23 @@ if (isset($data) && is_array($data)) {
                                     <span class="nav-link-title">Inicio</span>
                                 </a>
                             </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle show" href="#navbar-extra" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="true">
+                            <li class="nav-item">
+                                <div class="nav-link">
                                     <span class="nav-link-icon d-md-none d-lg-inline-block">
                                         <i class="ti ti-folders"></i>
                                     </span>
                                     <span class="nav-link-title">Carpetas</span>
-                                </a>
-                                <div class="dropdown-menu show">
-                                    <div class="dropdown-menu-columns">
-                                        <div class="dropdown-menu-column">
-                                            <?php renderTreeTabler($folderTree, $currentFolder); ?>
-                                        </div>
-                                    </div>
+                                </div>
+                                <div class="folder-tree-container">
+                                    <ul class="folder-tree">
+                                        <li class="tree-item">
+                                            <a href="<?= BASE_URL ?>" class="tree-link <?= !$currentFolder ? 'active' : '' ?>">
+                                                <i class="ti ti-home-2 tree-icon"></i>
+                                                <span>Raíz</span>
+                                            </a>
+                                        </li>
+                                        <?php renderTreeWindows($folderTree, $currentFolder); ?>
+                                    </ul>
                                 </div>
                             </li>
                         </ul>
@@ -472,17 +476,45 @@ function getFileColor($extension) {
     return $colors[strtolower($extension)] ?? $colors['default'];
 }
 
-function renderTreeTabler($tree, $currentFolder, $level = 0) {
-    foreach ($tree as $folder) {
+function renderTreeWindows($tree, $currentFolder, $level = 0) {
+    foreach ($tree as $index => $folder) {
         $isActive = $currentFolder == $folder['id'] ? 'active' : '';
-        $padding = $level * 20;
-        echo '<a class="dropdown-item ' . $isActive . '" href="' . BASE_URL . '?folder=' . $folder['id'] . '" style="padding-left: ' . (16 + $padding) . 'px;">';
-        echo '<i class="ti ti-folder icon me-2"></i>';
-        echo htmlspecialchars($folder['name']);
-        echo '</a>';
-        if (!empty($folder['children'])) {
-            renderTreeTabler($folder['children'], $currentFolder, $level + 1);
+        $hasChildren = !empty($folder['children']);
+        $isLast = $index === count($tree) - 1;
+
+        echo '<li class="tree-item' . ($isLast ? ' last' : '') . '">';
+
+        // Línea de conexión
+        echo '<span class="tree-line"></span>';
+
+        // Contenedor del item
+        echo '<div class="tree-content">';
+
+        // Botón expandir/colapsar
+        if ($hasChildren) {
+            echo '<button type="button" class="tree-toggle" onclick="toggleTreeFolder(this)">';
+            echo '<i class="ti ti-chevron-right"></i>';
+            echo '</button>';
+        } else {
+            echo '<span class="tree-toggle-placeholder"></span>';
         }
+
+        // Link de la carpeta
+        echo '<a href="' . BASE_URL . '?folder=' . $folder['id'] . '" class="tree-link ' . $isActive . '">';
+        echo '<i class="ti ti-folder' . ($hasChildren ? '' : '') . ' tree-icon"></i>';
+        echo '<span>' . htmlspecialchars($folder['name']) . '</span>';
+        echo '</a>';
+
+        echo '</div>';
+
+        // Subcarpetas
+        if ($hasChildren) {
+            echo '<ul class="tree-children">';
+            renderTreeWindows($folder['children'], $currentFolder, $level + 1);
+            echo '</ul>';
+        }
+
+        echo '</li>';
     }
 }
 ?>

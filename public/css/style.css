@@ -79,8 +79,161 @@
     color: #fff;
 }
 
-.navbar-vertical .dropdown-item .ti-folder {
+/* ========================================
+   Árbol de carpetas estilo Windows Explorer
+   ======================================== */
+
+.folder-tree-container {
+    padding: 0.5rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.folder-tree {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.folder-tree ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tree-item {
+    position: relative;
+    padding-left: 20px;
+}
+
+/* Línea vertical que conecta los items */
+.tree-item::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Eliminar línea vertical después del último item */
+.tree-item.last::before {
+    bottom: calc(100% - 12px);
+}
+
+/* Línea horizontal que conecta al item */
+.tree-line {
+    position: absolute;
+    left: 8px;
+    top: 12px;
+    width: 12px;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Primera capa no necesita línea */
+.folder-tree > .tree-item::before,
+.folder-tree > .tree-item > .tree-line {
+    display: none;
+}
+
+.folder-tree > .tree-item {
+    padding-left: 0;
+}
+
+.tree-content {
+    display: flex;
+    align-items: center;
+    padding: 2px 0;
+}
+
+.tree-toggle {
+    background: none;
+    border: none;
+    padding: 2px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+}
+
+.tree-toggle:hover {
     color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.tree-toggle i {
+    font-size: 12px;
+    transition: transform 0.15s ease;
+}
+
+.tree-toggle-placeholder {
+    width: 18px;
+    flex-shrink: 0;
+}
+
+.tree-link {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+    flex: 1;
+    min-width: 0;
+}
+
+.tree-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.tree-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-weight: 500;
+}
+
+.tree-icon {
+    margin-right: 6px;
+    font-size: 1rem;
+    color: #ffc107;
+    flex-shrink: 0;
+}
+
+.tree-link.active .tree-icon {
+    color: #ffca2c;
+}
+
+.tree-link span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tree-children {
+    margin-left: 0;
+    padding-left: 20px;
+    position: relative;
+}
+
+/* Estado colapsado */
+.tree-item.collapsed > .tree-children {
+    display: none;
+}
+
+/* Icono de home */
+.tree-link .ti-home-2 {
+    color: #17a2b8;
 }
 
 /* ========================================
