@@ -102,4 +102,4 @@ INSERT INTO roles (name, description, can_upload, can_edit, can_delete, can_shar
 
 -- Insertar usuario administrador por defecto (password: admin123)
 INSERT INTO users (username, email, password, full_name, role_id) VALUES
-('admin', 'admin@sistema.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Administrador', 1);
+('admin', 'admin@sistema.com', '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', 'Administrador', 1);
