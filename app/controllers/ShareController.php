@@ -199,6 +199,81 @@ class ShareController {
     }
 
     /**
+     * Descargar carpeta compartida como ZIP
+     */
+    public function downloadZip() {
+        $token = isset($_GET['token']) ? $_GET['token'] : '';
+
+        if (!$token) {
+            die('Token inválido');
+        }
+
+        if (!$this->shareModel->isValid($token)) {
+            die('El enlace ha expirado o no es válido');
+        }
+
+        $shareDetails = $this->shareModel->getDetailsByToken($token);
+
+        if (!$shareDetails) {
+            die('Recurso no encontrado');
+        }
+
+        // Solo permitir ZIP para carpetas
+        if ($shareDetails['entity_type'] !== 'folder') {
+            die('Esta función solo está disponible para carpetas compartidas');
+        }
+
+        $folder_id = $shareDetails['entity_id'];
+        $files = $this->fileModel->getByFolder($folder_id);
+
+        if (empty($files)) {
+            die('La carpeta no contiene archivos');
+        }
+
+        // Obtener nombre de la carpeta
+        $folder = $this->folderModel->getById($folder_id);
+        $folderName = $folder ? $folder['name'] : 'carpeta';
+
+        // Crear archivo ZIP temporal
+        $zipFileName = $folderName . '_' . date('Y-m-d_H-i-s') . '.zip';
+        $zipFilePath = sys_get_temp_dir() . '/' . $zipFileName;
+
+        $zip = new ZipArchive();
+        if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+            die('No se pudo crear el archivo ZIP');
+        }
+
+        // Agregar archivos al ZIP
+        foreach ($files as $file) {
+            if (file_exists($file['file_path'])) {
+                $zip->addFile($file['file_path'], $file['original_name']);
+            }
+        }
+
+        $zip->close();
+
+        // Verificar que el ZIP se creó correctamente
+        if (!file_exists($zipFilePath)) {
+            die('Error al crear el archivo ZIP');
+        }
+
+        // Enviar el archivo ZIP
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/zip');
+        header('Content-Disposition: attachment; filename="' . $zipFileName . '"');
+        header('Content-Length: ' . filesize($zipFilePath));
+        header('Pragma: public');
+        header('Cache-Control: must-revalidate');
+
+        readfile($zipFilePath);
+
+        // Eliminar archivo temporal
+        unlink($zipFilePath);
+
+        exit;
+    }
+
+    /**
      * Eliminar enlace compartido
      */
     public function delete() {

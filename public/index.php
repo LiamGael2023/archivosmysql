@@ -102,6 +102,11 @@ switch ($request) {
         $controller->preview();
         break;
 
+    case '/share/download-zip':
+        $controller = new ShareController();
+        $controller->downloadZip();
+        break;
+
     case '/share/create':
         $controller = new ShareController();
         $controller->create();

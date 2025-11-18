@@ -140,6 +140,25 @@ if (isset($data) && is_array($data)) {
                     </div>
                 </div>
 
+                <!-- Download All as ZIP (only for folders) -->
+                <?php if ($shareDetails['entity_type'] === 'folder' && !empty($files)): ?>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <a href="<?= BASE_URL ?>/share/download-zip?token=<?= $token ?>" class="btn btn-lg btn-primary">
+                                    <i class="ti ti-file-zip icon me-2"></i>
+                                    Descargar todo como ZIP
+                                </a>
+                                <div class="text-muted small mt-2">
+                                    Descarga todos los archivos de esta carpeta en un archivo comprimido
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <!-- Footer Info -->
                 <div class="row mt-4">
                     <div class="col-12">
