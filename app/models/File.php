@@ -69,15 +69,20 @@ class File {
                 FROM files f
                 LEFT JOIN folders fo ON f.folder_id = fo.id
                 LEFT JOIN meta_keys mk ON mk.entity_type = 'file' AND mk.entity_id = f.id
-                WHERE f.name LIKE :query
-                   OR f.original_name LIKE :query
-                   OR mk.meta_key LIKE :query
-                   OR mk.meta_value LIKE :query
+                WHERE f.name LIKE :query1
+                   OR f.original_name LIKE :query2
+                   OR mk.meta_key LIKE :query3
+                   OR mk.meta_value LIKE :query4
                 ORDER BY f.{$orderBy} {$orderDir}";
 
         $stmt = $this->db->prepare($sql);
         $searchTerm = "%{$query}%";
-        $stmt->execute(['query' => $searchTerm]);
+        $stmt->execute([
+            'query1' => $searchTerm,
+            'query2' => $searchTerm,
+            'query3' => $searchTerm,
+            'query4' => $searchTerm
+        ]);
         return $stmt->fetchAll();
     }
 
