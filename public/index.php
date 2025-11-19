@@ -23,7 +23,7 @@ spl_autoload_register(function ($class) {
 
 // Obtener la ruta solicitada
 $request = $_SERVER['REQUEST_URI'];
-$base_path = '/archivosmysql/public';
+$base_path = '/archivo/public';
 $request = str_replace($base_path, '', parse_url($request, PHP_URL_PATH));
 
 // Enrutamiento simple
