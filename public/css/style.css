@@ -497,6 +497,32 @@
    Responsive
    ======================================== */
 
+@media (max-width: 991px) {
+    /* Ocultar sidebar en móviles y mostrar como colapsable */
+    .navbar-vertical {
+        position: fixed !important;
+        z-index: 1030;
+        width: 100%;
+        max-width: 280px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .navbar-vertical.show {
+        transform: translateX(0);
+    }
+
+    /* Asegurar que el contenido principal tenga espacio */
+    .page-body {
+        margin-left: 0 !important;
+        padding: 1rem;
+    }
+
+    .page-wrapper {
+        margin-left: 0 !important;
+    }
+}
+
 @media (max-width: 768px) {
     .folder-card {
         margin-bottom: 1rem;
@@ -517,6 +543,12 @@
     .card-body {
         padding: 1rem;
     }
+
+    /* Tabla responsive */
+    .table-responsive {
+        margin: 0 -1rem;
+        padding: 0 1rem;
+    }
 }
 
 @media (max-width: 576px) {
@@ -534,6 +566,20 @@
 
     .empty-icon {
         font-size: 3rem;
+    }
+
+    /* Ocultar columnas menos importantes en móvil */
+    .d-none-mobile {
+        display: none !important;
+    }
+
+    /* Navbar brand más pequeño */
+    .navbar-brand img {
+        height: 30px !important;
+    }
+
+    .navbar-brand span {
+        font-size: 0.875rem;
     }
 }
 
